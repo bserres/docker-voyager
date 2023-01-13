@@ -1,0 +1,30 @@
+# creates a Docker image and launches a container
+# with a simple development server built with Node.js and Express.
+#
+# The server provides unsecured read access to dist/ and
+# read/write access through WebDAV to files/
+
+version: '3'
+
+services:
+  server:
+    image: voyager/server
+    container_name: voyager-server
+    build:
+      context: ./services/server/setup
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    networks:
+      app_net:
+        ipv4_address: $VOYAGER_SERVER_IPV4_ADDR
+    ports:
+      - $VOYAGER_SERVER_PORT:$VOYAGER_SERVER_PORT
+    volumes:
+      - .:/app
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: $VOYAGER_SERVER_SUBNET
